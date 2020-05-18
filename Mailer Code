@@ -1,0 +1,70 @@
+from datetime import date, timedelta
+import pandas as pd
+import pymysql
+import gspread
+import pandas as pd
+import numpy as np
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread_dataframe as gd
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import base64
+import pandas as pd
+from datetime import datetime
+import json
+import os
+
+
+
+#Creation of mailer
+with open('credentials.json', 'rb') as file:
+    credentials = json.load(file)
+    username = credentials['username']
+    password = credentials['password']
+    
+
+FROM = 'krohan0507@gmail.com'
+TO = 'krohan0507@gmail.com, krohan0507@gmail.com'
+SUBJECT = 'subject'
+BODY =  'PFA ' 
+
+
+
+# Create Message
+message = MIMEMultipart()
+message['to'] = TO
+message['from'] = FROM
+message['subject'] = SUBJECT
+message.attach(MIMEText(BODY))
+
+# Addition of attachement
+part = MIMEBase('application', "octet-stream")
+part.set_payload(open(f'./CSV/Name.csv', "rb").read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', 'attachment', filename="Name.csv")
+message.attach(part)
+Final_Message = message.as_string()
+
+
+# Sending of message
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(username, password)
+server.sendmail(FROM, TO, Final_Message)
+server.quit()
+
+
+
+
+# Removing of csv file 
+file = 'Name.csv'
+  
+# File location 
+location = r'C:\Users\---\Documents\-----\CSV'
+  
+# Path 
+path = os.path.join(location, file)
+os.remove(path)
